@@ -1,0 +1,8 @@
+all:
+  hosts:
+    apache:
+      ansible_host: 172.30.0.2
+    mysql:
+      ansible_host: 172.30.0.3
+    phpmyadmin:
+      ansible_host: 172.30.0.4

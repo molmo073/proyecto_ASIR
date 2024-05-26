@@ -1,0 +1,65 @@
+networks:
+  redproy:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/24
+
+services:
+  svc-mysql:
+    container_name: mysql
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mmb1932&
+      MYSQL_DATABASE: facturas
+      MYSQL_USER: adminmysql
+      MYSQL_PASSWORD: mmb1932&
+    volumes:
+      - ./bbdd/db_data:/var/lib/mysql
+      - /proyecto/bbdd/init.sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      redproy:
+        ipv4_address: 172.30.0.3
+
+  svc-phpmyadmin:
+    container_name: phpmyadmin
+    build:
+      context: ./phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: svc-mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: mmb1932&
+    depends_on:
+      - svc-mysql
+    ports:
+      - "8080:80"
+      - "2222:22"
+    networks:
+      redproy:
+        ipv4_address: 172.30.0.4
+    volumes:
+      - /root/.ssh/id_rsa:/root/.ssh/id_rsa
+      - /root/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      - /root/.ssh/authorized_keys:/root/.ssh/authorized_keys
+
+  svc-php-apache:
+    container_name: apache
+    build:
+      context: ./php-apache
+    restart: always
+    ports:
+      - "8000:80"
+      - "2223:22"
+    networks:
+      redproy:
+        ipv4_address: 172.30.0.2
+    volumes:
+      - ./php-app:/var/www/html
+      - /root/.ssh/id_rsa:/root/.ssh/id_rsa
+      - /root/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      - /root/.ssh/authorized_keys:/root/.ssh/authorized_keys

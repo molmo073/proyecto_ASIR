@@ -1,0 +1,10 @@
+- name: Ping a máquinas Docker
+  hosts: apache:phpmyadmin
+  tasks:
+    - name: Ejecutar ping a contenedor
+      ansible.builtin.ping:
+
+    - name: Actualizar paquetes en el sistema
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: yes
